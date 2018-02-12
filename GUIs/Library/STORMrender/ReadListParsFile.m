@@ -39,8 +39,11 @@ end
 %--------------------------------------------------------------------------
 %% Main Function
 %--------------------------------------------------------------------------
-binfile = regexprep(binfile,'alist','mlist'); % for DaoSTORM
-listpars = regexprep(binfile,'.bin','_pars.txt');
+[pathname,filename,ext] = fileparts(binfile);
+%binfile = regexprep(binfile,'alist','mlist'); % for DaoSTORM
+%listpars = regexprep(binfile,'.bin','_pars.txt');
+listpars = [filename '_pars.txt'];
+
 if exist(listpars,'file') == 2
     fid = fopen(listpars);
     T = textscan(fid,'%s','Delimiter','\n');

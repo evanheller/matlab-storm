@@ -3,7 +3,7 @@ function WriteParsTxt(binfile,parsfile)
 % analyze the current daxfile. 
 
 if strcmp(parsfile(end-3:end),'.xml')
-    datatype = '_mlist.bin';
+    datatype = '.h5';
 elseif strcmp(parsfile(end-3:end),'.ini')
     datatype = '_list.bin';
 else
@@ -11,7 +11,7 @@ else
 end
        
 % Record parameter file used in the infofile notes.  
-binparstype = regexprep(datatype,'\.bin','\_pars.txt'); 
+binparstype = regexprep(datatype,'\.h5','\_pars.txt'); 
 binparsfile = regexprep(binfile,datatype,binparstype);
 txtOut = {['parameters used = ',parsfile];
           ['binfile = ',binfile]};

@@ -197,7 +197,12 @@ time_run = tic;
 if isempty(daxnames)
     if isempty(daxfile)
         % Get all dax files in folder        
-        alldax = dir([dpath,'*',daxroot,'*.dax']);
+        if daxroot
+            alldax = dir([dpath,'*',daxroot,'*.dax']);
+        else
+            alldax=dir([dpath,'*.dax']);
+        end
+
         daxnames = {alldax(:).name};
         % remove all short dax files from list
         daxsizes = [alldax(:).bytes];
@@ -239,7 +244,7 @@ switch method
         datatype = '_list.bin'; 
         parstype = '.ini';
     case 'DaoSTORM'
-        datatype = '_mlist.bin';
+        datatype = '.h5';
         parstype = '.xml';
     otherwise
         error(['method ',method,' not recognized.  Available methods:',...
@@ -248,6 +253,7 @@ end
 
 
 %% ~~~~~~~~~~~~~~~~~~~ Find binfiles ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 if isempty(binnames) % a cell array of binnames passed (equal to length daxnames)
      binnames = strcat(dpath,daxroots,datatype);
    if ~isempty(binname) && strcmp(method,'DaoSTORM') % insight does not allow changing the binname
@@ -330,10 +336,13 @@ if sum(hasbin) ~= 0
             for a = find(logical(hasbin))';
                 disp(['deleting ',binnames{a}]);          
                 delete(binnames{a});
+
+                %{
                 alistname = regexprep(binnames{a},'_mlist\.bin','_alist\.bin');
                 if exist(alistname,'file')>0
                     delete(alistname);
                 end
+                %}
             end
         end
     elseif overwritefiles == 2 || (overwritefiles == 3 && strcmp(method,'insight'))
@@ -357,7 +366,7 @@ for s=1:Sections % loop through all dax movies in que
     daxfile = [dpath,daxnames{s}]; 
     binfile = binnames{s}; 
     
-    if ~isempty(maxCPU)
+    if ~isempty(maxCPU) & ispc
         waitforfreecpu('MaxLoad',maxCPU,'RefreshTime',10,'verbose',verbose);
     end
     
@@ -387,15 +396,18 @@ for s=1:Sections % loop through all dax movies in que
         case 'DaoSTORM'
             if runinMatlab % 
                 if printprogress  % Print fitting progress to command line
-                    system([daoSTORMexe,' "',daxfile,'" "',binfile,'" "',parsfile,'"']);  
+                    system([daoSTORMexe,' --movie "',daxfile,'" --bin "',binfile,'" --xml "',parsfile,'"']);  
                 else  % Don't print to command line (save output in text file)
-                    system([daoSTORMexe,' "',daxfile,'" "',binfile,'" "',parsfile,'" >' dpath,'\newlog',num2str(s),'.txt']); 
+                    system([daoSTORMexe,' --movie "',daxfile,'" --bin "',binfile,'" --xml "',parsfile,'" >' dpath,'\newlog',num2str(s),'.txt']); 
                 end
             else  % Launch silently in the background
-                % binfile
-                system_command = [daoSTORMexe,' "',daxfile,'" "',binfile,'" "',parsfile, '" && exit &']; 
+                system_command = [daoSTORMexe,' --movie "',daxfile,'" --bin "',binfile,'" --xml "',parsfile, '" &']; 
                 prc{s} = SystemRun(system_command,'Hidden',hideterminal); 
-                batchwait = true;
+
+                if ispc
+                    batchwait = true;
+                end
+
             end          
     end   
     WriteParsTxt(binfile,parsfile);

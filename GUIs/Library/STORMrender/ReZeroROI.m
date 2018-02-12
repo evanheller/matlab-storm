@@ -32,8 +32,16 @@ end
 
 
 %% Main Function
+[binPath,filename,ext] = fileparts(binfile);
+
 if isempty(mlist)
-    mlist = ReadMasterMoleculeList(binfile);
+
+    if ext == '.h5'
+        mlist=ReadH5MoleculeList(binfile);
+    else
+        mlist = ReadMasterMoleculeList(binfile);
+    end
+
 end
 
 parsfile = ReadListParsFile(binfile);
@@ -61,8 +69,9 @@ if  hasParsFile
          roiInfo = read_parameterfile(parsfile,roiFlags,endmarker);
         catch
             try
-                binPath = extractpath(binfile);
-                [~, parsName] = extractpath(parsfile);
+                %binPath = extractpath(binfile);
+                %[~, parsName] = extractpath(parsfile);
+                parsName=[filename '.bla'];
                 roiInfo = read_parameterfile([binPath,parsName],roiFlags,endmarker);
             catch
                 hasROIinfo = false;
@@ -80,11 +89,13 @@ if  hasParsFile
         mlist.y = mlist.y - roi(3);      
     end
 end
+
 if ~hasParsFile
     if verbose
        disp('No ROI parameters found. using dimensions from .inf file');  
     end
-    daxname = regexprep(binfile,{'_list.bin','_mlist.bin','_alist.bin'},'.dax');
+
+    daxname = [filename '.dax'];
     try
         infofile = ReadInfoFile(daxname);
         h = infofile.frame_dimensions(2); % actual size of image

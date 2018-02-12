@@ -97,7 +97,9 @@ if size(image1spots,1) >= size(image2spots,1)
     matches21(  dist1>parameters.maxD, :) = [];   % remove distant points
 
     % for the channel with the smaller number of feducials, remove double hits
-    [v,n] = occurrences(idx1); 
+    %[v,n] = occurrences(idx1); 
+    [n,v] = histc(idx1, unique(idx1))
+   
     multihits1 = v(n>1);
     multihits1_idx = ismember( matches21(:,2), multihits1);
     matches21(multihits1_idx,:) = [];
@@ -110,7 +112,8 @@ else
     matches12(  dist2>parameters.maxD, :) = [];   % remove distant points
 
     % for the channel with the smaller number of feducials, remove double hits
-    [v,n] = occurrences(idx2); 
+    %[v,n] = occurrences(idx2); 
+    [n,v] = histc(idx2, unique(idx2));
     multihits2 = v(n>1);
     multihits2_idx = ismember( matches12(:,2), multihits2);
     matches12(multihits2_idx,:) = [];
@@ -123,7 +126,8 @@ end
 [idx1,dist1] = knnsearch(image1spots,image2spotsw); %  indices of image1spots nearest for each point in image2spots 
 matches21 = [ (1:size(image2spots,1))',idx1 ];
 matches21(  dist1>parameters.maxD, :) = [];   % remove distant points
-[v,n] = occurrences(idx1);
+%[v,n] = occurrences(idx1);
+[n,v] = histc(idx1, unique(idx1));
 multihits1 = v(n>1);
 multihits1_idx = ismember( matches21(:,2), multihits1);
 matches21(multihits1_idx,:) = [];

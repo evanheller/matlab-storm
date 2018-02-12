@@ -158,9 +158,9 @@ for f=1:length(filePaths)
     
     % Create bin file path
     if isempty(parameters.savePath)
-        binFilePaths{f} = [filePath filesep fileName '_' parameters.mListType '.bin'];
+        binFilePaths{f} = [filePath filesep fileName '.h5'];
     else
-        binFilePaths{f} = [parameters.savePath fileName '_' parameters.mListType '.bin'];
+        binFilePaths{f} = [parameters.savePath fileName '.h5'];
     end
     
     % Check if it exists
@@ -199,9 +199,9 @@ end
 commands = {};
 for i=1:length(filePaths)
     displayCommand = ['echo ' 'Analyzing: ' filePaths{i} ' && '];            
-    commands{i} = [displayCommand daoSTORMexe ' ' '"' filePaths{i} '" ' ... 
-        ' "' binFilePaths{i} '" ' ...
-        ' "' configFilePaths{i} '"'];
+    commands{i} = [displayCommand daoSTORMexe ' --movie "' filePaths{i} '" ' ... 
+        ' --bin "' binFilePaths{i} '" ' ...
+        ' --xml "' configFilePaths{i} '"'];
 end
 
 % -------------------------------------------------------------------------

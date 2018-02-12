@@ -37,8 +37,14 @@ Tchns = length(binnames);
 mlist = cell(Tchns,1); 
 for c=1:Tchns
     fullBinName = strcat(SR{handles.gui_number}.LoadOps.pathin,filesep,binnames{c});
-    mlist{c} = ReadMasterMoleculeList(fullBinName,'verbose',...
+    [filepath,name,ext] = fileparts(fullBinName);
+    if ext == '.h5'
+        mlist{c} = ReadH5MoleculeList(fullBinName,'verbose',...
                     SR{handles.gui_number}.DisplayOps.verbose); 
+    else
+        mlist{c} = ReadMasterMoleculeList(fullBinName,'verbose',...
+                    SR{handles.gui_number}.DisplayOps.verbose); 
+    end
 end
 
     

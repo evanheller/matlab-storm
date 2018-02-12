@@ -78,8 +78,16 @@ end
     set(handles.threshold,'String',SF{instanceID}.FitPars.threshold);
     set(handles.maxits,'String',SF{instanceID}.FitPars.maxits);
     set(handles.bkd,'String',SF{instanceID}.FitPars.bkd );
+    % New DaoSTORM parameters
+    set(handles.camgain,'String',SF{instanceID}.FitPars.camgain );
+    set(handles.bksig,'String',SF{instanceID}.FitPars.bksig );
+
     set(handles.ppnm,'String',SF{instanceID}.FitPars.ppnm );
     set(handles.initwidth,'String',SF{instanceID}.FitPars.initwidth );
+
+    % Another new one
+    set(handles.maxrad,'String',SF{instanceID}.FitPars.maxrad );
+
     set(handles.descriptor,'String',SF{instanceID}.FitPars.descriptor);
      set(handles.displacement,'String',SF{instanceID}.FitPars.displacement);
      set(handles.startFrame,'String',SF{instanceID}.FitPars.startFrame);
@@ -156,11 +164,15 @@ Fmethod =  get(handles.method,'Value');
    elseif Fmethod == 4
       SF{instanceID}.FitPars.method = 'Z' ;
    end
+
 SF{instanceID}.FitPars.threshold = get(handles.threshold,'String');
 SF{instanceID}.FitPars.maxits = get(handles.maxits,'String');
 SF{instanceID}.FitPars.bkd = get(handles.bkd,'String');
+SF{instanceID}.FitPars.camgain = get(handles.camgain,'String');
+SF{instanceID}.FitPars.bksig = get(handles.bksig,'String');
 SF{instanceID}.FitPars.ppnm = get(handles.ppnm,'String');
 SF{instanceID}.FitPars.initwidth = get(handles.initwidth,'String');
+SF{instanceID}.FitPars.maxrad = get(handles.maxrad,'String');
 SF{instanceID}.FitPars.descriptor = get(handles.descriptor,'String');
 SF{instanceID}.FitPars.displacement =  get(handles.displacement,'String');
 SF{instanceID}.FitPars.startFrame = get(handles.startFrame,'String');
@@ -196,6 +208,7 @@ SF{instanceID}.FitPars.xmin = get(handles.xmin,'String');
 SF{instanceID}.FitPars.xmax = get(handles.xmax,'String');
 SF{instanceID}.FitPars.ymin = get(handles.ymin,'String');
 SF{instanceID}.FitPars.ymax = get(handles.ymax,'String');
+
 
 % Okay to proceed?
 SF{instanceID}.FitPars.OK = true;
@@ -1210,3 +1223,72 @@ function ymax_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% Callback functions for new DaoSTORM parameters-- is this really necessary?
+function camgain_Callback(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of maxits as text
+%        str2double(get(hObject,'String')) returns contents of maxits as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function camgain_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function bksig_Callback(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of maxits as text
+%        str2double(get(hObject,'String')) returns contents of maxits as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function bksig_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+function maxrad_Callback(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of maxits as text
+%        str2double(get(hObject,'String')) returns contents of maxits as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function maxrad_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to maxits (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+

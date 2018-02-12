@@ -19,6 +19,11 @@ global stormAnalysisPath; % path to storm-analysis
 global scratchPath; % default scratch path
 
 %% Define matlab-storm Path
+matlabStormPath='/Users/evanheller/documents/MATLAB/matlab-storm/';
+stormAnalysisPath='/Users/evanheller/bin/storm-analysis/';
+scratchPath='/Users/evanheller/storm/';
+insightExe='wine /Users/evanheller/bin/Insight3/Insight3';
+
 addpath(matlabStormPath, '-begin');
 addpath(stormAnalysisPath, '-begin');
 disp(['Adding matlab-storm: ' matlabStormPath])
@@ -37,16 +42,28 @@ display('------------------------------------------------------------------');
 
 %% Define paths for other STORM analysis software 
 % Optionally change the default parameter files
-defaultIniFile = [matlabStormPath,'Templates\647data_pars.ini'];
-defaultXmlFile = [matlabStormPath,'Templates\647_3dmufit_pars.xml'];
 
-% Set all the necessary paths for DaoSTORM to run  % 
-newDaoPath = [stormAnalysisPath '3d_daostorm\'];
-windowsDllPath = [stormAnalysisPath 'windows_dll\'];
-setWindowsPaths = ['path=',pythonPath,';',windowsDllPath,';',' && '];
-setPythonPaths =['set PYTHONPATH=%PYTHONPATH%;',stormAnalysisPath,'; && '];
-daoSTORMcmd = ['python.exe ',newDaoPath,'mufit_analysis.py',' '];
-daoSTORMexe = [setWindowsPaths,setPythonPaths,daoSTORMcmd];
+if ispc
+    defaultIniFile = [matlabStormPath,'Templates\647data_pars.ini'];
+    defaultXmlFile = [matlabStormPath,'Templates\647_3dmufit_pars.xml'];
+
+    % Set all the necessary paths for DaoSTORM to run  % 
+    newDaoPath = [stormAnalysisPath 'storm_analysis\daostorm_3d\'];
+    windowsDllPath = [stormAnalysisPath 'windows_dll\'];
+    setWindowsPaths = ['path=',pythonPath,';',windowsDllPath,';',' && '];
+    setPythonPaths =['set PYTHONPATH=%PYTHONPATH%;',stormAnalysisPath,'; && '];
+else
+    defaultIniFile = [matlabStormPath,'Templates/647data_pars.ini'];
+    defaultXmlFile = [matlabStormPath,'Templates/647_3dmufit_pars.xml'];
+
+    % Set all the necessary paths for DaoSTORM to run  % 
+    newDaoPath = [stormAnalysisPath 'storm_analysis/daostorm_3d/'];
+    setPythonPaths =['export PYTHONPATH=$PYTHONPATH;',stormAnalysisPath];
+end
+
+
+daoSTORMcmd = ['python ',newDaoPath,'mufit_analysis.py',' '];
+daoSTORMexe = [daoSTORMcmd];
 
 display('Created STORM-Specific Global Variables:');
 display(['    ScratchPath = ' scratchPath]);

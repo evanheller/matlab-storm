@@ -349,6 +349,7 @@ for i=1:length(fileNames)
             commands{i} = [displayCommand exePath ' ' '"' filePaths{i} fileNames{i} '" ' ... 
                 ' "' binFilePaths{i} binFileNames{i} '" ' ...
                 ' "' configFile '"'];
+
     end
     jobNames{i} = ''; 
 end

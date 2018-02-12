@@ -188,7 +188,7 @@ global  SF insightExe daoSTORMexe scratchPath
                 parameters,new_values,'<');             
         % need to delete any existing bin menufile before we overwrite, or
         % DaoSTORM tries to pick up analysis where it left off.  
-         binfile = regexprep([scratchPath,'mov_temp.dax'],'\.dax','_mlist.bin'); 
+         binfile = regexprep([scratchPath,'mov_temp.dax'],'\.dax','.h5'); 
          if exist(binfile,'file')
             delete(binfile);
          end    
@@ -196,9 +196,9 @@ global  SF insightExe daoSTORMexe scratchPath
         disp('locating dots by DaoSTORM');
         disp(SF{handles.gui_number}.daxfile)
         disp(xmlfile_temp);
-        system([daoSTORMexe,' "',...
+        system([daoSTORMexe,' --movie "',...
             SF{handles.gui_number}.daxfile,...
-            '" "',binfile,'" "',xmlfile_temp,'"']);
+            '" --bin "',binfile,'" --xml "',xmlfile_temp,'" > /dev/null']);
         
             
 	elseif FitMethod == 3
@@ -211,8 +211,12 @@ global  SF insightExe daoSTORMexe scratchPath
     
     if FitMethod~=3
         try
-        SF{handles.gui_number}.mlist = ...
-            ReadMasterMoleculeList(binfile,'verbose',false);
+            [filepath,name,ext] = fileparts(binfile);
+            if ext == '.h5'
+                SF{handles.gui_number}.mlist = ReadH5MoleculeList(binfile);
+            else
+                 SF{handles.gui_number}.mlist=ReadMasterMoleculeList(binfile,'verbose',false);
+            end
         catch %#ok<*CTCH>
             disp('no molecules found to display!');
             disp('Try changing fit pars');  
@@ -227,8 +231,8 @@ caxis([SF{handles.gui_number}.impars.cmin,...
     SF{handles.gui_number}.impars.cmax]); colormap gray;
 set(handles.title1,'String',SF{handles.gui_number}.daxfile); % ,'interpreter','none'); 
 hold on;  
-plot(SF{handles.gui_number}.mlist.x(:),...
-    SF{handles.gui_number}.mlist.y(:),'yo','MarkerSize',20);
+plot(SF{handles.gui_number}.mlist.x(:)+1.0,...
+    SF{handles.gui_number}.mlist.y(:)+1.0,'yo','MarkerSize',20);
 axis off;
 % rectangle(mlist.x(:),mlist.y(:),mlist.w(:),mlist.w(:));
 
@@ -282,13 +286,17 @@ if ~isempty(SF{handles.gui_number}.daxfile)
 else
      startfolder = pwd;
 end
-[FileName,PathName,FilterIndex] = uigetfile({'*.bin','Bin file (*.bin)';...
+[FileName,PathName,FilterIndex] = uigetfile({'*.h5','Bin file (*.bin)';...
     '*.*','All Files (*.*)'},'Select molecule list',startfolder);
 if FilterIndex ~= 0 % loading operation was not canceled
     SF{handles.gui_number}.binpath = [PathName,FileName];
     try
-    SF{handles.gui_number}.fullmlist = ...
-        ReadMasterMoleculeList(SF{handles.gui_number}.binpath); 
+        [filepath,name,ext] = fileparts(SF{handles.gui_number}.binpath);
+        if ext == '.h5'
+            SF{handles.gui_number}.fullmlist = ReadH5MoleculeList(SF{handles.gui_number}.binpath);
+        else
+            SF{handles.gui_number}.fullmlist=ReadMasterMoleculeList(SF{handles.gui_number}.binpath); 
+        end
     catch er
        disp(er.message); 
        disp(['loading failed.  Is ',[PathName,FileName],...
@@ -449,9 +457,12 @@ elseif FitMethod == 2
         '<model type="string">',...    method
         '<threshold type="float">'...  threshold
         '<iterations type="int">',...  maxits
-        '<baseline type="float">',...   bkd
+        '<camera_offset type="float">',...   bkd
+        '<background_sigma type="float">',...  bksig
+        '<camera_gain type="float">',... camgain 
         '<pixel_size type="float">',... ppnm
         '<sigma type="float">',...      initwidth
+        '<find_max_radius type="int">',... maxrad
         '<descriptor type="string">',... descriptor
         '<radius type="float">',...  displacement
         '<start_frame type="int">',... startFrame
@@ -486,8 +497,8 @@ elseif FitMethod == 2
     % Read in current parameter values from xmlfile
       target_values = read_parameterfile(SF{handles.gui_number}.xmlfile,parameters,'<');
     % save these values into global FitPars;
-      Pfields = {'method','threshold','maxits','bkd','ppnm','initwidth',...
-          'descriptor','displacement','startFrame','endFrame','CorDrift',...
+      Pfields = {'method','threshold','maxits','bkd','bksig', 'camgain','ppnm','initwidth',...
+          'maxrad', 'descriptor','displacement','startFrame','endFrame','CorDrift',...
           'dframes','dscale','Fit3D','zcutoff','zstart','zend','wx0','gx',...
           'zrx','Ax','Bx','Cx','Dx','wy0','gy','zry','Ay','By','Cy','Dy',...
           'xmin','xmax','ymin','ymax'};
@@ -842,6 +853,7 @@ if ~isempty(Dopts)  % dealing with cancel
 
     k = strfind(SF{handles.gui_number}.daxfile,filesep);
     fpath = SF{handles.gui_number}.daxfile(1:k(end));
+
     RunDotFinder('path',fpath,'batchsize',eval(Dopts{1}),'daxroot',Dopts{2},...
          parflag,Dopts{3},'overwrite',eval(Dopts{4}),'method',method,...
          'minsize',eval(Dopts{5})*1E6,'hideterminal',eval(Dopts{6}),...
